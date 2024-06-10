@@ -1,0 +1,5 @@
+{
+    "http": "http://localhost:80/api",
+    "https": "https://localhost:80/api",
+    "ws": "ws://localhost:80/ws"
+}

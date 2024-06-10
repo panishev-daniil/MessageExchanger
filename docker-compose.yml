@@ -1,0 +1,52 @@
+version: '3.4'
+
+services:
+  nginx:
+    image: nginx:alpine
+    volumes:
+      - ./nginx.conf:/etc/nginx/nginx.conf
+    ports:
+      - "80:80"
+    restart: unless-stopped
+    depends_on:
+      - messageexchanger.web
+      - vue-app
+    networks:
+      - app-network
+  vue-app:
+    image: node:22-alpine3.19
+    build:
+      context: .
+      dockerfile: vue-project/Dockerfile
+    container_name: vue-app
+    restart: always
+    ports:
+      - "3000:3000"
+    networks:
+      - app-network
+  postgres:
+    image: postgres:16.3-alpine3.20
+    volumes:
+      - ./init.sql:/docker-entrypoint-initdb.d/init.sql
+    ports:
+      - "5432:5432"
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=A3qjJosybDxD02tx
+      - POSTGRES_DB=messageExchanger
+    networks:
+      - app-network
+  messageexchanger.web:
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - ASPNETCORE_URLS=http://*:5000
+      - WDS_SOCKET_PORT=0
+    image: ${DOCKER_REGISTRY-}messageexchangerweb
+    build:
+      context: .
+      dockerfile: MessageExchanger.WEB/Dockerfile
+    networks:
+      - app-network
+networks:
+  app-network:
+    driver: bridge

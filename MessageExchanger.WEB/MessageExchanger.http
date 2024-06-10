@@ -1,0 +1,6 @@
+@MessageExchanger_HostAddress = http://localhost:5277
+
+GET {{MessageExchanger_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
